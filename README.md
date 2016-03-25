@@ -1,6 +1,6 @@
 # FriendBot
-# Authors:
-# Robert Carneiro
-# Dan Sze
-# Brendan Courslite
-# Albert
+## Authors:
+### Robert Carneiro
+### Dan Sze
+### Brendan Courslite
+### Albert
