@@ -18,12 +18,12 @@ def respond(keyWord, verb, POS):
 		grammar = CFG.fromstring("""
 		S -> H-NP1 Adj VP'?' | Wh-NP VP'?'
 		H-NP1 -> 'How'
-		Wh-NP -> 'Who' | 'What' | 'When' | 'Where' | 'What'
+		Wh-NP -> 'Who' | 'What' | 'Where' | 'What'
 		Adj -> 'big' | 'small' | 'happy' | 'sad'
 		NP -> Pronoun | Proper-Noun 
 		Pronoun -> 'they' | 'those'
-		Proper-Noun -> '<>'
-		Noun -> '<>'
+		Proper-Noun -> 'the <>'
+		Noun -> 'the <>'
 		VP -> Verb NP  
 		Verb -> 'are' 
 		""")
@@ -31,12 +31,12 @@ def respond(keyWord, verb, POS):
 		grammar = CFG.fromstring("""
 		S -> H-NP1 Adj VP'?' | Wh-NP VP'?'
 		H-NP1 -> 'How'
-		Wh-NP -> 'Who' | 'What' | 'When' | 'Where' | 'What'
+		Wh-NP -> 'Who' | 'What' | 'Where' | 'What'
 		Adj -> 'big' | 'small' | 'happy' | 'sad'
 		NP -> Pronoun | Proper-Noun 
 		Pronoun -> 'it' | 'that'
-		Proper-Noun -> '<>'
-		Noun -> '<>'
+		Proper-Noun -> 'the <>'
+		Noun -> 'the <>'
 		VP -> Verb NP  
 		Verb -> 'is' 
 		""")
@@ -47,6 +47,9 @@ def respond(keyWord, verb, POS):
 
 	num = randint(0, len(rand_sent_list)-1)
 	response = rand_sent_list[num]
+	if "<>" in response:
+		index = response.index("<>")
+		response = response[:index] + keyWord + response[index+2:]
 	print(response)
 	
 
@@ -65,7 +68,7 @@ def handleInput(input):
 
 	if sentType == 1:
 		print("statement")
-		respond("cats", "NNS")
+		respond("cats", "n/a", "NNS")
 	elif sentType == 2:
 		print("question")
 
