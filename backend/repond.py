@@ -10,8 +10,30 @@ def main():
 	sentence=input('Enter a sentence -->')
 	handleInput(sentence)
 
-def respondSentence(keyWord):
+#Not really AI
+#keyVerb is just the main verb
+#keyPhrase is the first word (who, what, where etc.)
+def respondSentence(sentence):
 	grammar = ""
+	sentence = sentence.lower()
+	location_keys = ["live", "reside", "stay", "where are"]
+	name_keys = ["called", "who are"]
+	knowledge_rep = "tell me"
+	if knowledge_rep in sentence:
+		#ROB DO THIS
+		return
+	elif any(word in sentence for word in location_keys):
+		responses = ["I live in the Internet.", "I live in a mansion.", "In Bermuda."]
+		num = randint(0, len(responses)-1)
+		print(responses[num])
+	elif any(word in sentence for word in name_keys):
+		responses = ["My name is FriendBot!", "Some call me FriendBot.", "I am Friendbot."]
+		num = randint(0, len(responses)-1)
+		print(responses[num])
+	else:
+		print("I don't want to answer that. Tell me more about yourself.")
+
+
 
 
 def respondQuestion(keyWord, verb, POS):
@@ -81,6 +103,7 @@ def handleInput(input):
 		respondQuestion("cats", "n/a", "NNS")
 	elif sentType == 2:
 		print("question")
+		respondSentence(sentence)
 
 if __name__ == "__main__":
     main()
