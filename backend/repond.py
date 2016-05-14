@@ -10,8 +10,11 @@ def main():
 	sentence=input('Enter a sentence -->')
 	handleInput(sentence)
 
+def respondSentence(keyWord):
+	grammar = ""
 
-def respond(keyWord, verb, POS):
+
+def respondQuestion(keyWord, verb, POS):
 	grammar = ""
 
 	if POS == "NNPS" or POS == "NNS":
@@ -20,9 +23,9 @@ def respond(keyWord, verb, POS):
 		H-NP1 -> 'How'
 		Wh-NP -> 'Who' | 'What' | 'Where' | 'What'
 		Adj -> 'big' | 'small' | 'happy' | 'sad'
-		NP -> Pronoun | Proper-Noun 
+		NP -> Pronoun | Proper-Noun | Noun
 		Pronoun -> 'they' | 'those'
-		Proper-Noun -> 'the <>'
+		Proper-Noun -> '[]'
 		Noun -> 'the <>'
 		VP -> Verb NP  
 		Verb -> 'are' 
@@ -33,9 +36,9 @@ def respond(keyWord, verb, POS):
 		H-NP1 -> 'How'
 		Wh-NP -> 'Who' | 'What' | 'Where' | 'What'
 		Adj -> 'big' | 'small' | 'happy' | 'sad'
-		NP -> Pronoun | Proper-Noun 
+		NP -> Pronoun | Proper-Noun | Noun
 		Pronoun -> 'it' | 'that'
-		Proper-Noun -> 'the <>'
+		Proper-Noun -> '[]'
 		Noun -> 'the <>'
 		VP -> Verb NP  
 		Verb -> 'is' 
@@ -44,12 +47,19 @@ def respond(keyWord, verb, POS):
 	rand_sent_list = []
 	for sentence in generate(grammar):
 	    rand_sent_list.append(' '.join(sentence))
-
-	num = randint(0, len(rand_sent_list)-1)
-	response = rand_sent_list[num]
-	if "<>" in response:
-		index = response.index("<>")
-		response = response[:index] + keyWord + response[index+2:]
+	while True:
+		num = randint(0, len(rand_sent_list)-1)
+		response = rand_sent_list[num]
+		if "<>" in response and (POS == "NNS" or POS == "NN"):
+			index = response.index("<>")
+			response = response[:index] + keyWord + response[index+2:]
+			break
+		if "[]" in response and (POS == "NNPS" or POS == "NNP"):
+			index = response.index("[]")
+			response = response[:index] + keyWord + response[index+2:]
+			break
+		if "<>" not in response and "[]" not in response:
+			break
 	print(response)
 	
 
@@ -68,7 +78,7 @@ def handleInput(input):
 
 	if sentType == 1:
 		print("statement")
-		respond("cats", "n/a", "NNS")
+		respondQuestion("cats", "n/a", "NNS")
 	elif sentType == 2:
 		print("question")
 
