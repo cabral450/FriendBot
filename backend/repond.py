@@ -36,7 +36,7 @@ def respondSentence(sentence):
 
 
 
-def respondQuestion(keyWord, verb, POS):
+def respondQuestion(keyWord, POS):
 	grammar = ""
 
 	if POS == "NNPS" or POS == "NNS":
@@ -100,7 +100,7 @@ def handleInput(input):
 
 	if sentType == 1:
 		print("statement")
-		respondQuestion("cats", "n/a", "NNS")
+		respondQuestion("cats", "NNS")
 	elif sentType == 2:
 		print("question")
 		respondSentence(sentence)
