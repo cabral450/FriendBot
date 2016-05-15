@@ -5,6 +5,7 @@ from nltk.parse.generate import generate, demo_grammar
 from nltk import CFG
 import re, string
 import parser
+nltk.grammar._STANDARD_NONTERM_RE = re.compile('( [\w/][\w$/^<>-]* ) \s*', re.VERBOSE)
 
 class stack(list):
 	def __init__(self, x):
@@ -446,9 +447,9 @@ def handleInput(input):
 	JJR -> """ + jjrs + """
 	JJS -> """ + jjss + """
 	EX -> """ + exs + """
-	CC -> """ + ccs
-	#PRP$ -> """ + prpds + """
-	#WP$ -> """ + wpds
+	CC -> """ + ccs + """
+	PRP$ -> """ + prpds + """
+	WP$ -> """ + wpds
 	
 	grammar = nltk.CFG.fromstring(grammarString)
 
