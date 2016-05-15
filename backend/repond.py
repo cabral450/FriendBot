@@ -34,7 +34,7 @@ def respondSentence(sentence):
 
 
 
-def respondQuestion(sentence, keyWord, POS, dataMap):
+def respondQuestion(sentence, keyWord, POS):
 	sentence = sentence.lower();
 	if "tell me" not in sentence:
 		grammar = ""
@@ -134,7 +134,7 @@ def handleInput(input):
 
 	if sentType == 1:
 		print("statement")
-		respondQuestion(sentence, "cats", "NNS", {})
+		respondQuestion(sentence, "cats", "NNS")
 	elif sentType == 2:
 		print("question")
 		respondSentence(sentence)

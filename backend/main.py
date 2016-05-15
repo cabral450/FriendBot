@@ -2,6 +2,8 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.parse.generate import generate, demo_grammar
 from nltk import CFG
+import re, string
+import parser
 
 #list in a map in a map
 #Ex: {'I': {'shot': ['elephant']}}
@@ -18,7 +20,7 @@ def main():
 			print "Goodbye"
 			running=False
 		else:
-			handleInput("I shot an elephant in my pajamas.")#sentence
+			handleInput(sentence)
 
 def addData(parent, foundNP, foundVP, foundOBJ, NP, VP, OBJ):
 
@@ -121,24 +123,63 @@ def handleInput(input):
 #=====================================
 #temporary grammar but eventually sentence broken down into a grammar
 
-	grammar = nltk.CFG.fromstring("""
+	subject = ""
+	verb = ""
+	obj = ""
+	foundSub = False
+	lookingForComma = False
+
+	for word in tokens2:
+		if lookingForComma:
+			if word[1] == ",":
+				lookingForComma = False
+			continue
+		if (word[1] == "TO" or word[1] == "IN") and "," in sentence:
+			lookingForComma = True
+			continue
+		if word[1] == "NN" or word[1] == "NNP" or word[1] == "NNPS" or word[1] == "NNS" or word[1] == "PRP":
+			if foundSub:
+				obj = word[0]
+			else:
+				subject = word[0]
+				foundSub = True
+
+		if word[1] == "VB" or word[1] == "VBG" or word[1] == "VBD" or word[1] == "VBN" or word[1] == "VBP" or word[1] == "VBZ":
+			verb = word[0]
+
+	#how should i handle Det and P?
+	grammarString = """
 	S -> NP VP
 	PP -> P NP
-	NP -> Det N | Det N PP | 'I'
+	NP -> Det N | Det N PP | '""" + subject + """'
 	VP -> V NP | VP PP
-	Det -> 'an' | 'my'
-	N -> 'elephant' | 'pajamas'
-	V -> 'shot'
-	P -> 'in'
-	""")
-	sent=['I', 'shot', 'an', 'elephant', 'in', 'my', 'pajamas']
+	Det -> 'all' | 'an' | 'another' | 'any' | 'both' | 'del' | 'each' | 'either' | 'every' | 'half' | 'la' | 'many' | 'much' | 'nary' | 'neither' | 'no' | 'some' | 'such' | 'that' | 'the' | 'them' | 'these' | 'this' | 'those'
+	N ->  | '""" + obj + """'
+	V -> '""" + verb+"""'"""
+
+	grammar = nltk.CFG.fromstring(grammarString)
+
+
+	#grammar = nltk.CFG.fromstring("""
+	#S -> NP VP
+	#PP -> P NP
+	#NP -> Det N | Det N PP | 'I'
+	#VP -> V NP | VP PP
+	#Det -> 'an' | 'my'
+	#N -> 'elephant' | 'pajamas'
+	#V -> 'shot'
+	#P -> 'in'
+	#""")
 	parser = nltk.ChartParser(grammar)
+
+	regex=re.compile('[^a-zA-Z]')
+	tempSentence=regex.sub(' ', sentence)
+	sent=tempSentence.split()
+
 
 #=====================================
 #make all possible sentences from a grammar, make it a function
 
-	#grammar = nltk.CFG.fromstring(demo_grammar)
-	#print grammar
 	#for sentence in generate(grammar, n=10):
 	#	print(' '.join(sentence))
 
@@ -152,11 +193,14 @@ def handleInput(input):
 	#statement
 	if sentType == 1:
 		#get trees
+		print "HERE1"
 		for tree in parser.parse(sent):
+			print "LOOP"
 			print tree
 			addData(tree, False, False, False, 0, 0, 0)
 			print data
 			print
+		print "HERE2"
 
 	#question
 	elif sentType == 2:
