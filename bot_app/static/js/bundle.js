@@ -15,14 +15,22 @@ var Message = React.createClass({
   displayName: 'Message',
 
   render: function () {
+
     return React.createElement(
       'div',
       { className: 'message' },
       React.createElement(
         'span',
         null,
+        React.createElement(
+          'strong',
+          null,
+          this.props.user
+        ),
+        ' ',
         this.props.text
-      )
+      ),
+      React.createElement('hr', null)
     );
   }
 });
@@ -30,12 +38,17 @@ var Message = React.createClass({
 var MessageList = React.createClass({
   displayName: 'MessageList',
 
+
+  componentDidUpdate: function () {
+    ReactDOM.findDOMNode(this).scrollTop = ReactDOM.findDOMNode(this).scrollHeight;
+  },
+
   render() {
     return React.createElement(
       'div',
       { className: 'messageList' },
       this.props.messages.map(function (message, i) {
-        return React.createElement(Message, { key: i, text: message.text });
+        return React.createElement(Message, { key: i, user: message.user, text: message.text });
       })
     );
   }
@@ -52,7 +65,7 @@ var MessageForm = React.createClass({
   handleSubmit(e) {
     e.preventDefault();
     var message = {
-      user: "you",
+      user: "You:",
       text: this.state.text
     };
     this.props.onMessageSubmit(message);
@@ -97,7 +110,17 @@ var BotApp = React.createClass({
   displayName: 'BotApp',
 
   getInitialState: function () {
-    return { messages: [], text: '' };
+    return { messages: [{ user: 'FriendBot:', text: 'Hi I\'m FriendBot!' }] };
+  },
+
+  componentDidMount() {
+    socket.on('msg:response', this.handleMessageReceive);
+  },
+
+  handleMessageReceive(message) {
+    var { messages } = this.state;
+    messages.push(message);
+    this.setState({ messages });
   },
 
   handleMessageSubmit(message) {

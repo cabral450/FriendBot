@@ -12,22 +12,29 @@ var socket = io.connect('http://' + document.domain + ':' + location.port);
 
 var Message = React.createClass({
   render: function() {
+
     return (
         <div className="message">
-            <span>{this.props.text}</span>        
+            <span><strong>{this.props.user}</strong> {this.props.text}</span> 
+            <hr/>
         </div>
     );
   }
 });
 
 var MessageList = React.createClass({
+
+  componentDidUpdate: function() {
+    ReactDOM.findDOMNode(this).scrollTop = ReactDOM.findDOMNode(this).scrollHeight;
+  },
+
   render() {
       return (
           <div className='messageList'>
             {
               this.props.messages.map(function(message, i) {
                 return (
-                    <Message key={i} text={message.text}/>
+                    <Message key={i} user={message.user} text={message.text}/>
                 );
               })
             }
@@ -45,7 +52,7 @@ var MessageForm = React.createClass({
   handleSubmit(e) {
       e.preventDefault();
       var message = {
-          user : "you",
+          user : "You:",
           text : this.state.text
       }
       this.props.onMessageSubmit(message); 
@@ -76,7 +83,17 @@ var MessageForm = React.createClass({
 
 var BotApp = React.createClass({
   getInitialState: function() {
-    return {messages: [], text: ''};
+    return {messages: [{user: 'FriendBot:', text: 'Hi I\'m FriendBot!'}]};
+  },
+
+  componentDidMount() {
+    socket.on('msg:response', this.handleMessageReceive);
+  },
+
+  handleMessageReceive(message) {
+    var {messages} = this.state;
+    messages.push(message);
+    this.setState({messages});
   },
 
   handleMessageSubmit(message) {

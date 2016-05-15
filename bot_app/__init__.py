@@ -1,9 +1,10 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import ast
+from bot_app.parser import handleInput
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+app.config['SECRET_KEY'] = 'RPI_INTRO_TO_AI_SPRING2016'
 socketio = SocketIO(app)
 
 @app.route('/')
@@ -12,4 +13,6 @@ def index():
 
 @socketio.on('msg:send')
 def chat_message(message):
-    print(message['text'])
+    response = handleInput(message['text'])
+    print(response)
+    emit('msg:response', {'user': 'FriendBot:', 'text': response})
