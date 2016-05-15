@@ -1,23 +1,35 @@
 import nltk
+from random import randint
 from nltk.tokenize import word_tokenize
 from nltk.parse.generate import generate, demo_grammar
 from nltk import CFG
 import re, string
 import parser
 
+class stack(list):
+	def __init__(self, x):
+		self.x=x
+	def push(self, item):
+		self.append(item)
+	def isEmpty(self):
+		return not self
+
 #list in a map in a map
 #Ex: {'I': {'shot': ['elephant']}}
 data={}
+queuedTopics = stack([])
+allTopics = stack([])
+topicsDic = {}
 
 def main():
-	print "Hello"
+	return "Hello"
 	#loop while not command \q
 	running=True
 	while running:
 		#get the sentence
 		sentence=raw_input("Respond -->")
 		if sentence == "\\q":
-			print "Goodbye"
+			return "Goodbye"
 			running=False
 		else:
 			handleInput(sentence)
@@ -40,9 +52,11 @@ def addData(parent, foundNP, foundVP, foundOBJ, NP, VP, OBJ):
 			#found what we were looking for
 			if foundNP and foundVP and foundOBJ:
 				#sentence data
+				if len(OBJ) == 0:
+					continue
 				subject=NP[0]
 				verb=VP[0]
-				obj=OBJ[1]
+				obj=OBJ[0]
 
 				#check if we have any data/add it
 				if data.has_key(subject):
@@ -108,7 +122,132 @@ def getData(parent, foundNP, foundVP, NP, VP):
 			continue
 
 	return ""
-	
+
+def knowledgeRep(sentence):
+	tokens=word_tokenize(sentence)
+	tokens2=nltk.pos_tag(tokens)
+	subject = ""
+	verb = ""
+	obj = ""
+	foundSub = False
+	lookingForComma = False
+
+	for word in tokens2:
+		if lookingForComma:
+			if word[1] == ",":
+				lookingForComma = False
+			continue
+		if (word[1] == "TO" or word[1] == "IN") and "," in sentence:
+			lookingForComma = True
+			continue
+		if word[1] == "NN" or word[1] == "NNS" or word[1] == "NNP" or word[1] == "NNPS" or word[1] == "PRP":
+			if foundSub:
+				obj = word[0]
+			else:
+				subject = word[0]
+				foundSub = True
+
+		if word[1] == "VB" or word[1] == "VBG" or word[1] == "VBD" or word[1] == "VBN" or word[1] == "VBP" or word[1] == "VBZ":
+			verb = word[0]
+
+	if data.has_key(subject):
+		if data[subject].has_key(verb):
+			tempList = data[subject][verb]
+			if subject.lower() == "i":
+				sentence = "You " + verb + " " + tempList[0]
+				for x in range(1,len(tempList)-1):
+					sentence = sentence + ", " + tempList[x]
+				sentence = sentence + ", and " + tempList[len(tempList)-1]
+				return sentence
+			elif subject.lower() == "you":
+				sentence = "I " + verb + " " + tempList[0]
+				for x in range(1, len(tempList)-1):
+					sentence = sentence + ", " + tempList[x]
+				sentence = sentence + ", and " + tempList[len(tempList)-1]
+				return sentence
+			else:
+				sentence = subject + verb + " " + ' '.join(tempList)
+				return sentence
+		else:
+			return("I don't want to talk about about that. Let's talk about something else.")
+	else:
+		return("I don't want to talk about about that. Let's talk about something else.")
+
+
+
+#Not really AI
+#keyVerb is just the main verb
+#keyPhrase is the first word (who, what, where etc.)
+def respondSentence(sentence):
+	grammar = ""
+	location_keys = ["live", "reside", "stay", "where are"]
+	name_keys = ["called", "who are"]
+	knowledge_rep = "What" #not done
+
+	if any(word in sentence for word in location_keys) and "you" in sentence:
+		responses = ["I live in the Internet.", "I live in a mansion.", "In Bermuda."]
+		num = randint(0, len(responses)-1)
+		return(responses[num])
+	elif any(word in sentence for word in name_keys) and "you" in sentence:
+		responses = ["My name is FriendBot!", "Some call me FriendBot.", "I am Friendbot."]
+		num = randint(0, len(responses)-1)
+		return(responses[num])
+	else:
+		knowledgeRep(sentence)
+
+
+
+
+def respondQuestion(sentence, keyWord, POS):
+	if "Tell me" not in sentence:
+		grammar = ""
+
+		if POS == "NNPS" or POS == "NNS":
+			grammar = CFG.fromstring("""
+			S -> H-NP1 Adj VP'?' | Wh-NP VP'?'
+			H-NP1 -> 'How'
+			Wh-NP -> 'Who' | 'What' | 'Where' | 'What'
+			Adj -> 'big' | 'small' | 'happy' | 'sad' | 'large' | 'difficult' | 'emotional' | 'old' | 'healthy' | 'strong' | 'cute' | 'hungry'
+			NP -> Pronoun | Proper-Noun | Noun
+			Pronoun -> 'they' | 'those'
+			Proper-Noun -> '[]'
+			Noun -> 'the <>'
+			VP -> Verb NP  
+			Verb -> 'are' 
+			""")
+		elif POS == "NN" or "NNP":
+			grammar = CFG.fromstring("""
+			S -> H-NP1 Adj VP'?' | Wh-NP VP'?'
+			H-NP1 -> 'How'
+			Wh-NP -> 'Who' | 'What' | 'Where' | 'What'
+			Adj -> 'big' | 'small' | 'happy' | 'sad' | 'large' | 'difficult' | 'emotional' | 'old' | 'healthy' | 'strong' | 'cute' | 'hungry'
+			NP -> Pronoun | Proper-Noun | Noun
+			Pronoun -> 'it' | 'that'
+			Proper-Noun -> '[]'
+			Noun -> 'the <>'
+			VP -> Verb NP  
+			Verb -> 'is' 
+			""")
+
+		rand_sent_list = []
+		for sentence in generate(grammar):
+		    rand_sent_list.append(' '.join(sentence))
+		while True:
+			num = randint(0, len(rand_sent_list)-1)
+			response = rand_sent_list[num]
+			if "<>" in response and (POS == "NNS" or POS == "NN"):
+				index = response.index("<>")
+				response = response[:index] + keyWord + response[index+2:]
+				break
+			if "[]" in response and (POS == "NNPS" or POS == "NNP"):
+				index = response.index("[]")
+				response = response[:index] + keyWord + response[index+2:]
+				break
+			if "<>" not in response and "[]" not in response:
+				break
+		return(response)
+	else:
+		knowledgeRep(sentence)
 
 def handleInput(input):
 	
@@ -120,8 +259,18 @@ def handleInput(input):
 	tokens=word_tokenize(sentence)
 	tokens2=nltk.pos_tag(tokens)
 
+	#priority queue
+	for taggedWord in tokens2:
+		#if topic hasn't already been brought up, and it is a noun
+		if taggedWord[0] not in allTopics and (taggedWord[1] == "NN" or taggedWord[1] == "NNP" or taggedWord[1] == "NNPS" or taggedWord[1] == "NNS"):
+			#push word to topics queue, list of all topics, and topics dictionary
+			queuedTopics.push(taggedWord[0])
+			allTopics.push(taggedWord[0])
+			topicsDic[taggedWord[0]] = taggedWord[1]
+
 #=====================================
 #temporary grammar but eventually sentence broken down into a grammar
+
 	nouns = ""
 	verbs = ""
 	preps = ""
@@ -159,7 +308,7 @@ def handleInput(input):
 				lookingForComma = False
 			continue
 
-		if word[1] == "Det":
+		if word[1] == "DT":
 			if dets == "": #if dets is empty
 				dets = "'"+word[0]+"'"
 			else: #dets isnt empty
@@ -273,15 +422,14 @@ def handleInput(input):
 				verbs = "'"+word[0]+"'"
 			else: #verbs isnt empty
 				verbs = verbs + " | '" + word[0] + "'"
-		if word[1] == ""
-	#how should i handle Det and P?
+
 	grammarString = """
 	S -> NP VP
 	PP -> P NP
-	NP -> Det N | Det N PP | '""" + nouns + """'
+	NP -> Det N | Det N PP | """ + nouns + """
 	VP -> V NP | VP PP
 	Det -> """ + dets + """
-	N ->  | '""" + nouns + """'
+	N ->  | """ + nouns + """
 	V -> """ + verbs + """
 	P -> """ + preps + """
 	WRB -> """ + wrbs + """
@@ -298,10 +446,10 @@ def handleInput(input):
 	JJR -> """ + jjrs + """
 	JJS -> """ + jjss + """
 	EX -> """ + exs + """
-	CC -> """ + ccs + """
-	PRP$ -> """ + prpds + """
-	WP$ -> """ + wpds
-
+	CC -> """ + ccs
+	#PRP$ -> """ + prpds + """
+	#WP$ -> """ + wpds
+	
 	grammar = nltk.CFG.fromstring(grammarString)
 
 
@@ -338,23 +486,24 @@ def handleInput(input):
 	#statement
 	if sentType == 1:
 		#get trees
-		print "HERE1"
 		for tree in parser.parse(sent):
-			print "LOOP"
-			print tree
+			#print tree
 			addData(tree, False, False, False, 0, 0, 0)
-			print data
-			print
-		print "HERE2"
+			#print data
+		if len(queuedTopics) > 0:
+			topic = queuedTopics.pop()
+			return respondQuestion(sentence, topic, topicsDic[topic])
+		else:
+			return "Tell me other cool facts about yourself."
 
 	#question
 	elif sentType == 2:
 		#get trees
 		for tree in parser.parse(sent):
-			print tree
+			#print tree
 			knowledge=getData(tree, False, False, 0, 0)
-			print knowledge
-			print
+			#print knowledge
+		return respondSentence(sentence)
 
 if __name__ == "__main__":
     main()
