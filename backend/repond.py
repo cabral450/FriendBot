@@ -10,6 +10,47 @@ def main():
 	sentence=input('Enter a sentence -->')
 	handleInput(sentence)
 
+def knowledgeRep(sentence):
+	tokens=word_tokenize(sentence)
+	tokens2=nltk.pos_tag(tokens)
+	subject = ""
+	verb = ""
+	obj = ""
+	foundSub = False
+	lookingForComma = False
+
+	for word in tokens2:
+		if lookingForComma:
+			if word[1] == ",":
+				lookingForComma = False
+			continue
+		if (word[1] == "TO" or word[1] == "IN") and "," in sentence:
+			lookingForComma = True
+			continue
+		if word[1] == "NN" or word[1] == "NNS" or word[1] == "NNP" or word[1] == "NNPS" or word[1] == "PRP":
+			if foundSub:
+				obj = word[0]
+			else:
+				subject = word[0]
+				foundSub = True
+
+		if word[1] == "VB" or word[1] == "VBG" or word[1] == "VBD" or word[1] == "VBN" or word[1] == "VBP" or word[1] == "VBZ":
+			verb = word[0]
+
+	print("subject: " + subject)
+	print("verb: " + verb)
+	print("object: " + obj)
+
+	tempList = data[subject][verb]
+	if subject == "I":
+		sentence = "You " + verb + ' '.join(tempList)
+		return sentence
+	else:
+		sentence = subject + verb + ' '.join(tempList)
+		return sentence
+
+
+
 #Not really AI
 #keyVerb is just the main verb
 #keyPhrase is the first word (who, what, where etc.)
@@ -18,7 +59,7 @@ def respondSentence(sentence):
 	sentence = sentence.lower()
 	location_keys = ["live", "reside", "stay", "where are"]
 	name_keys = ["called", "who are"]
-	knowledge_rep = "tell me"
+	knowledge_rep = "What" #not done
 
 	if any(word in sentence for word in location_keys):
 		responses = ["I live in the Internet.", "I live in a mansion.", "In Bermuda."]
@@ -34,7 +75,7 @@ def respondSentence(sentence):
 
 
 
-def respondQuestion(sentence, keyWord, POS):
+def respondQuestion(sentence, keyWord, POS, dataMap):
 	sentence = sentence.lower();
 	if "tell me" not in sentence:
 		grammar = ""
@@ -84,37 +125,11 @@ def respondQuestion(sentence, keyWord, POS):
 				break
 		print(response)
 	else:
-		tokens=word_tokenize(sentence)
-		tokens2=nltk.pos_tag(tokens)
-		subject = ""
-		verb = ""
-		obj = ""
-		foundSub = False
-		lookingForComma = False
+		knowledgeRep(sentence)
 
-		for word in tokens2:
-			if lookingForComma:
-				if word[1] == ",":
-					lookingForComma = False
-				continue
-			if (word[1] == "TO" or word[1] == "IN") and "," in sentence:
-				lookingForComma = True
-				continue
-			if word[1] == "NN" or word[1] == "NNS" or word[1] == "NNP" or word[1] == "NNPS" or word[1] == "PRP":
-				if foundSub:
-					obj = word[0]
-				else:
-					subject = word[0]
-					foundSub = True
 
-			if word[1] == "VB" or word[1] == "VBG" or word[1] == "VBD" or word[1] == "VBN" or word[1] == "VBP" or word[1] == "VBZ":
-				verb = word[0]
 
-		print("subject: " + subject)
-		print("verb: " + verb)
-		print("object: " + obj)
 
-		
 
 		
 
@@ -134,7 +149,7 @@ def handleInput(input):
 
 	if sentType == 1:
 		print("statement")
-		respondQuestion(sentence, "cats", "NNS")
+		respondQuestion(sentence, "cats", "NNS", {})
 	elif sentType == 2:
 		print("question")
 		respondSentence(sentence)
