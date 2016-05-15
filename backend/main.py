@@ -122,7 +122,9 @@ def handleInput(input):
 
 #=====================================
 #temporary grammar but eventually sentence broken down into a grammar
-
+	nouns = ""
+	verbs = ""
+	preps = ""
 	subject = ""
 	verb = ""
 	obj = ""
@@ -135,6 +137,10 @@ def handleInput(input):
 				lookingForComma = False
 			continue
 		if (word[1] == "TO" or word[1] == "IN") and "," in sentence:
+			if preps == "": #if preps is empty
+				preps = "'"+word[0]+"'"
+			else: #preps isnt empty
+				preps = preps + " | '" + word[0] + "'"
 			lookingForComma = True
 			continue
 		if word[1] == "NN" or word[1] == "NNP" or word[1] == "NNPS" or word[1] == "NNS" or word[1] == "PRP":
@@ -143,20 +149,28 @@ def handleInput(input):
 			else:
 				subject = word[0]
 				foundSub = True
-
+			if nouns == "": #if nouns is empty
+				nouns = "'"+word[0]+"'"
+			else: #nouns isnt empty
+				nouns = nouns + " | '" + word[0] + "'"
 		if word[1] == "VB" or word[1] == "VBG" or word[1] == "VBD" or word[1] == "VBN" or word[1] == "VBP" or word[1] == "VBZ":
 			verb = word[0]
-
+			if verbs == "": #if verbs is empty
+				verbs = "'"+word[0]+"'"
+			else: #verbs isnt empty
+				verbs = verbs + " | '" + word[0] + "'"
+		if word[1] == ""
 	#how should i handle Det and P?
 	grammarString = """
 	S -> NP VP
 	PP -> P NP
-	NP -> Det N | Det N PP | '""" + subject + """'
+	NP -> Det N | Det N PP | '""" + nouns + """'
 	VP -> V NP | VP PP
 	Det -> 'all' | 'an' | 'another' | 'any' | 'both' | 'del' | 'each' | 'either' | 'every' | 'half' | 'la' | 'many' | 'much' | 'nary' | 'neither' | 'no' | 'some' | 'such' | 'that' | 'the' | 'them' | 'these' | 'this' | 'those'
-	N ->  | '""" + obj + """'
-	V -> '""" + verb+"""'"""
-
+	N ->  | '""" + nouns + """'
+	V -> """ + verbs + """
+	P -> """ + preps
+	
 	grammar = nltk.CFG.fromstring(grammarString)
 
 
