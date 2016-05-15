@@ -129,6 +129,22 @@ def handleInput(input):
 	wps = ""
 	wrbs = ""
 
+	dets = ""
+	rbs = ""
+	rbrs = ""
+	rbss = ""
+	rps = ""
+	prps = ""
+	pdts = ""
+	mds = ""
+	jjs = ""
+	jjrs = ""
+	jjss = ""
+	exs = ""
+	ccs = ""
+
+
+
 	subject = ""
 	verb = ""
 	obj = ""
@@ -140,6 +156,72 @@ def handleInput(input):
 			if word[1] == ",":
 				lookingForComma = False
 			continue
+
+		if word[1] == "Det":
+			if dets == "": #if dets is empty
+				dets = "'"+word[0]+"'"
+			else: #dets isnt empty
+				dets = dets + " | '" + word[0] + "'"
+		if word[1] == "RB":
+			if rbs == "": #if rbs is empty
+				rbs = "'"+word[0]+"'"
+			else: #rbs isnt empty
+				rbs = rbs + " | '" + word[0] + "'"
+		if word[1] == "RBR":
+			if rbrs == "": #if rbrs is empty
+				rbrs = "'"+word[0]+"'"
+			else: #rbrs isnt empty
+				rbrs = rbrs + " | '" + word[0] + "'"
+		if word[1] == "RBS":
+			if rbss == "": #if rbss is empty
+				rbss = "'"+word[0]+"'"
+			else: #rbss isnt empty
+				rbss = rbss + " | '" + word[0] + "'"
+		if word[1] == "RP":
+			if rps == "": #if rps is empty
+				rps = "'"+word[0]+"'"
+			else: #rps isnt empty
+				rps = rps + " | '" + word[0] + "'"
+		if word[1] == "PRP":
+			if prps == "": #if prps is empty
+				prps = "'"+word[0]+"'"
+			else: #prps isnt empty
+				prps = prps + " | '" + word[0] + "'"
+		if word[1] == "PDT":
+			if pdts == "": #if pdts is empty
+				pdts = "'"+word[0]+"'"
+			else: #pdts isnt empty
+				pdts = pdts + " | '" + word[0] + "'"
+		if word[1] == "MD":
+			if mds == "": #if mds is empty
+				mds = "'"+word[0]+"'"
+			else: #mds isnt empty
+				mds = mds + " | '" + word[0] + "'"				
+		if word[1] == "JJ":
+			if jjs == "": #if jjs is empty
+				jjs = "'"+word[0]+"'"
+			else: #jjs isnt empty
+				jjs = jjs + " | '" + word[0] + "'"
+		if word[1] == "JJR":
+			if jjrs == "": #if jjrs is empty
+				jjrs = "'"+word[0]+"'"
+			else: #jjrs isnt empty
+				jjrs = jjrs + " | '" + word[0] + "'"
+		if word[1] == "JJS":
+			if jjss == "": #if jjss is empty
+				jjss = "'"+word[0]+"'"
+			else: #jjss isnt empty
+				jjss = jjss + " | '" + word[0] + "'"
+		if word[1] == "EX":
+			if exs == "": #if exs is empty
+				exs = "'"+word[0]+"'"
+			else: #exs isnt empty
+				exs = exs + " | '" + word[0] + "'"
+		if word[1] == "CC":
+			if ccs == "": #if ccs is empty
+				ccs = "'"+word[0]+"'"
+			else: #ccs isnt empty
+				ccs = ccs + " | '" + word[0] + "'"
 		if word[1] == "WDT":
 			if wdts == "": #if wdts is empty
 				wdts = "'"+word[0]+"'"
@@ -185,14 +267,25 @@ def handleInput(input):
 	PP -> P NP
 	NP -> Det N | Det N PP | '""" + nouns + """'
 	VP -> V NP | VP PP
-	Det -> 'all' | 'an' | 'another' | 'any' | 'both' | 'del' | 'each' | 'either' | 'every' | 'half' | 'la' | 'many' | 'much' | 'nary' | 'neither' | 'no' | 'some' | 'such' | 'that' | 'the' | 'them' | 'these' | 'this' | 'those'
+	Det -> """ + dets + """
 	N ->  | '""" + nouns + """'
 	V -> """ + verbs + """
 	P -> """ + preps + """
 	WRB -> """ + wrbs + """
 	WP -> """ + wps + """
-	WDT -> """ wdts + """
-
+	WDT -> """ + wdts + """
+	RB -> """ + rbs + """
+	RBR -> """ + rbrs + """
+	RBS -> """ + rbss + """
+	RP -> """ + rps + """
+	PRP -> """ + prps + """
+	PDT -> """ + pdts + """
+	MD -> """ + mds + """
+	JJ -> """ + jjs + """
+	JJR -> """ + jjrs + """
+	JJS -> """ + jjss + """
+	EX -> """ + exs + """
+	CC -> """ + ccs
 
 	grammar = nltk.CFG.fromstring(grammarString)
 
