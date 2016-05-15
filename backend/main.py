@@ -142,6 +142,8 @@ def handleInput(input):
 	jjss = ""
 	exs = ""
 	ccs = ""
+	prpds = ""
+	wpds = ""
 
 
 
@@ -222,6 +224,17 @@ def handleInput(input):
 				ccs = "'"+word[0]+"'"
 			else: #ccs isnt empty
 				ccs = ccs + " | '" + word[0] + "'"
+
+		if word[1] == "PRP$":
+			if prpds == "": #if prpds is empty
+				prpds = "'"+word[0]+"'"
+			else: #prpds isnt empty
+				prpds = prpds + " | '" + word[0] + "'"
+		if word[1] == "WP$":
+			if wpds == "": #if wpds is empty
+				wpds = "'"+word[0]+"'"
+			else: #wpds isnt empty
+				wpds = wpds + " | '" + word[0] + "'"
 		if word[1] == "WDT":
 			if wdts == "": #if wdts is empty
 				wdts = "'"+word[0]+"'"
@@ -285,7 +298,9 @@ def handleInput(input):
 	JJR -> """ + jjrs + """
 	JJS -> """ + jjss + """
 	EX -> """ + exs + """
-	CC -> """ + ccs
+	CC -> """ + ccs + """
+	PRP$ -> """ + prpds + """
+	WP$ -> """ + wpds
 
 	grammar = nltk.CFG.fromstring(grammarString)
 
