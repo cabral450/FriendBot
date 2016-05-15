@@ -125,6 +125,10 @@ def handleInput(input):
 	nouns = ""
 	verbs = ""
 	preps = ""
+	wdts = ""
+	wps = ""
+	wrbs = ""
+
 	subject = ""
 	verb = ""
 	obj = ""
@@ -136,6 +140,21 @@ def handleInput(input):
 			if word[1] == ",":
 				lookingForComma = False
 			continue
+		if word[1] == "WDT":
+			if wdts == "": #if wdts is empty
+				wdts = "'"+word[0]+"'"
+			else: #wdts isnt empty
+				wdts = wdts + " | '" + word[0] + "'"
+		if word[1] == "WP":
+			if wps == "": #if wps is empty
+				wps = "'"+word[0]+"'"
+			else: #wps isnt empty
+				wps = wps + " | '" + word[0] + "'"
+		if word[1] == "WRB":
+			if wrbs == "": #if wrbs is empty
+				wrbs = "'"+word[0]+"'"
+			else: #wrbs isnt empty
+				wrbs = wrbs + " | '" + word[0] + "'"
 		if (word[1] == "TO" or word[1] == "IN") and "," in sentence:
 			if preps == "": #if preps is empty
 				preps = "'"+word[0]+"'"
@@ -169,8 +188,12 @@ def handleInput(input):
 	Det -> 'all' | 'an' | 'another' | 'any' | 'both' | 'del' | 'each' | 'either' | 'every' | 'half' | 'la' | 'many' | 'much' | 'nary' | 'neither' | 'no' | 'some' | 'such' | 'that' | 'the' | 'them' | 'these' | 'this' | 'those'
 	N ->  | '""" + nouns + """'
 	V -> """ + verbs + """
-	P -> """ + preps
-	
+	P -> """ + preps + """
+	WRB -> """ + wrbs + """
+	WP -> """ + wps + """
+	WDT -> """ wdts + """
+
+
 	grammar = nltk.CFG.fromstring(grammarString)
 
 
